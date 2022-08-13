@@ -91,12 +91,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
       _isLoading = true;
     });
     if (_editedProduct.id.isNotEmpty) {
-      Provider.of<Products>(context, listen: false)
+     await Provider.of<Products>(context, listen: false)
           .updateProduct(_editedProduct.id, _editedProduct);
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pop();
+      
     } else {
       try {
         await Provider.of<Products>(context, listen: false)
@@ -105,11 +102,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
         await showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-                title: Text('An error occurred!'),
-                content: Text('Something went wrong.'),
+                title: const Text('An error occurred!'),
+                content: const Text('Something went wrong.'),
                 actions: <Widget>[
                   TextButton(
-                    child: Text('Okay'),
+                    child: const Text('Okay'),
                     onPressed: () {
                       Navigator.of(ctx).pop();
                     },
@@ -117,13 +114,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 ],
               ),
         );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
       }
+      //  finally {
+      //   setState(() {
+      //     _isLoading = false;
+      //   });
+      //   Navigator.of(context).pop();
+      // }
     }
+    setState(() {
+        _isLoading = false;
+      });
+      Navigator.of(context).pop();
     // Navigator.of(context).pop();
   }
 

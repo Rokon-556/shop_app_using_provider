@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:shop_app/models/http_exception.dart';
 import 'package:shop_app/provider/product.dart';
 import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
-   List<Product> _items = [
+  List<Product> _items = [
     // Product(
     //   id: 'p1',
     //   title: 'Red Shirt',
@@ -74,6 +75,9 @@ class Products with ChangeNotifier {
       final extractedData =
           json.decode((response.body)) as Map<String, dynamic>;
       final List<Product> loadedProduct = [];
+      if(extractedData==null){
+        return;
+      }
       extractedData.forEach((prodId, prodData) {
         loadedProduct.add(
           Product(
@@ -85,7 +89,7 @@ class Products with ChangeNotifier {
           ),
         );
       });
-      _items=loadedProduct;
+      _items = loadedProduct;
       notifyListeners();
     } catch (e) {
       rethrow;
@@ -118,13 +122,22 @@ class Products with ChangeNotifier {
       notifyListeners();
     } catch (error) {
       print(error);
-      throw error;
+      rethrow;
     }
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
+      final url = Uri.parse(
+          'https://rokon-556-default-rtdb.firebaseio.com/products/$id.json');
+      await http.patch(url,
+          body: json.encode({
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'price': newProduct.price,
+            'imageUrl': newProduct.imageUrl
+          }));
       _items[prodIndex] = newProduct;
       notifyListeners();
     } else {
@@ -132,8 +145,23 @@ class Products with ChangeNotifier {
     }
   }
 
-  void removeProduct(String id) {
-    _items.removeWhere((element) => element.id == id);
+  Future<void> removeProduct(String id) async {
+    final url = Uri.parse(
+        'https://rokon-556-default-rtdb.firebaseio.com/products/$id.json');
+
+    final existingProductIndex =
+        _items.indexWhere((element) => element.id == id);
+    Product? existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw HttpException('Could Not Delete Data.');
+    }
+
+    existingProduct = null;
   }
 }
