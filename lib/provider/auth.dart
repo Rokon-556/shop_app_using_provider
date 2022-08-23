@@ -30,8 +30,9 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> _authenticate(String email, String password, String URL) async {
+    const  String apiKey='Enter Your Api';
     final url = Uri.parse(
-        'https://identitytoolkit.googleapis.com/v1/accounts:$URL?key=AIzaSyALDwXplHUyr0oT5zp9QoDoNQjn8BBwwWs');
+        'https://identitytoolkit.googleapis.com/v1/accounts:$URL?key=$apiKey');
     try {
       final response = await http.post(
         url,
