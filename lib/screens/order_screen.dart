@@ -27,7 +27,7 @@ class OrderScreen extends StatelessWidget {
             } else {
               if (dataSnapshot.error != null) {
                 return const Center(
-                  child: Text('An Error Occurred'),
+                  child: Text('No Orders Found'),
                 );
               } else {
                 return Consumer<Order>(
