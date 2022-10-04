@@ -19,7 +19,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: true);
     final cart = Provider.of<Cart>(context, listen: false);
-    final authData=Provider.of<Auth>(context,listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
@@ -36,7 +36,7 @@ class ProductItem extends StatelessWidget {
                   : Icons.favorite_border_outlined),
               color: Theme.of(context).colorScheme.secondary,
               onPressed: () {
-                product.toggleFavoriteStatus(authData.token!,authData.userId!);
+                product.toggleFavoriteStatus(authData.token!, authData.userId!);
               },
             ),
           ),
@@ -48,7 +48,7 @@ class ProductItem extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text('Added To Cart!'),
-                    duration:const  Duration(seconds: 2),
+                    duration: const Duration(seconds: 2),
                     action: SnackBarAction(
                       label: 'UNDO',
                       onPressed: () {
@@ -61,15 +61,21 @@ class ProductItem extends StatelessWidget {
               color: Theme.of(context).colorScheme.secondary),
         ),
         child: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
-                arguments: product.id);
-          },
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
-          ),
-        ),
+            onTap: () {
+              Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
+                  arguments: product.id);
+            },
+            child: Hero(
+              tag: product.id,
+              child: FadeInImage(
+                placeholder:
+                    const AssetImage('assets/images/product-placeholder.png'),
+                image: NetworkImage(
+                  product.imageUrl,
+                ),
+                fit: BoxFit.cover,
+              ),
+            )),
       ),
     );
   }

@@ -18,31 +18,39 @@ class _OrderItemState extends State<OrderItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(10),
-      child: Column(children: [
-        ListTile(
-          title: Text('\$${widget.order.amount}'),
-          subtitle: Text(
-            DateFormat('dd MMM yy hh:mm').format(widget.order.dateTime),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      height:
+          _expanded ? min(widget.order.products.length * 20.0 + 110, 200) : 95,
+      child: Card(
+        margin: const EdgeInsets.all(10),
+        child: Column(children: [
+          ListTile(
+            title: Text('\$${widget.order.amount}'),
+            subtitle: Text(
+              DateFormat('dd MMM yy hh:mm').format(widget.order.dateTime),
+            ),
+            trailing: IconButton(
+              onPressed: () {
+                setState(() {
+                  _expanded = !_expanded;
+                });
+              },
+              icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+            ),
           ),
-          trailing: IconButton(
-            onPressed: () {
-              setState(() {
-                _expanded = !_expanded;
-              });
-            },
-            icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
-          ),
-        ),
-        if (_expanded)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 4.0),
-            height: min(widget.order.products.length * 20.0 + 10, 100),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            height: _expanded
+                ? min(widget.order.products.length * 20.0 + 10, 100)
+                : 0,
+            padding:
+                const EdgeInsets.symmetric(horizontal: 15.0, vertical: 4.0),
             child: ListView(
                 children: widget.order.products
                     .map(
-                      (prod) => Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      (prod) => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text(
                             prod.title,
@@ -59,7 +67,8 @@ class _OrderItemState extends State<OrderItem> {
                     )
                     .toList()),
           )
-      ]),
+        ]),
+      ),
     );
   }
 }

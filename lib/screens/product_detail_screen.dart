@@ -13,24 +13,27 @@ class ProductDetailScreen extends StatelessWidget {
     final productId = ModalRoute.of(context)!.settings.arguments as String;
     final loadedProduct = Provider.of<Products>(context).findById(productId);
     return Scaffold(
-      appBar: AppBar(title: Text(loadedProduct.title)),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // ignore: sized_box_for_whitespace
-            Container(
-              height: 300,
-              width: double.infinity,
-              child: Image.network(
-                loadedProduct.imageUrl,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(
+     // appBar: AppBar(title: Text(loadedProduct.title)),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 300,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(title: Text(loadedProduct.title,style: const TextStyle(color: Colors.purpleAccent),),background: Hero(
+                tag: loadedProduct.id,
+                child: Image.network(
+                  loadedProduct.imageUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),),
+          ),
+          SliverList(delegate: SliverChildListDelegate([
+const SizedBox(
               height: 10.0,
             ),
             Text(
               '\$${loadedProduct.price}',
+              textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Colors.grey,
                 fontSize: 20,
@@ -48,8 +51,10 @@ class ProductDetailScreen extends StatelessWidget {
                 softWrap: true,
               ),
             ),
-          ],
-        ),
+            const SizedBox(height: 800,)
+          ]))
+        ],
+        
       ),
     );
   }
